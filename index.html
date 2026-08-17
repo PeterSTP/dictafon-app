@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diktafón & Asistent</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5b3df5">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1e222c; --border:#2a2f3a;
+    --text:#eef0f4; --muted:#9aa3b2; --accent:#7c6bff; --accent2:#5b3df5;
+    --good:#31c48d; --warn:#f5a623; --danger:#e5484d;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding-bottom:40px;
+  }
+  header{
+    padding:20px 20px 12px; text-align:center;
+  }
+  header h1{ font-size:20px; margin:0 0 4px; font-weight:700; }
+  header p{ margin:0; color:var(--muted); font-size:13px; }
+  main{ max-width:640px; margin:0 auto; padding:0 16px; display:flex; flex-direction:column; gap:16px; }
+
+  .card{
+    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+    padding:16px;
+  }
+  .card h2{ font-size:14px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin:0 0 12px; font-weight:600; }
+
+  .mic-row{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .mic-btn{
+    width:96px; height:96px; border-radius:50%; border:none; cursor:pointer;
+    background:linear-gradient(145deg,var(--accent),var(--accent2));
+    color:white; font-size:34px; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 6px 24px rgba(91,61,245,.35); transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .mic-btn:active{ transform:scale(.94); }
+  .mic-btn.listening{
+    background:linear-gradient(145deg,#e5484d,#c53238);
+    box-shadow:0 0 0 8px rgba(229,72,77,.15), 0 6px 24px rgba(229,72,77,.35);
+    animation:pulse 1.4s infinite;
+  }
+  @keyframes pulse{
+    0%{ box-shadow:0 0 0 0 rgba(229,72,77,.35); }
+    70%{ box-shadow:0 0 0 16px rgba(229,72,77,0); }
+    100%{ box-shadow:0 0 0 0 rgba(229,72,77,0); }
+  }
+  .mic-status{ font-size:13px; color:var(--muted); min-height:18px; text-align:center; }
+  .mic-unsupported{
+    font-size:12.5px; color:var(--warn); text-align:center; max-width:440px; line-height:1.5;
+  }
+
+  textarea#transcript{
+    width:100%; min-height:160px; background:var(--panel2); border:1px solid var(--border);
+    border-radius:12px; color:var(--text); font-size:16px; padding:14px; resize:vertical;
+    line-height:1.5; font-family:inherit;
+  }
+  .toolbar{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+
+  button.btn{
+    border:none; border-radius:10px; padding:10px 14px; font-size:13.5px; font-weight:600;
+    cursor:pointer; color:var(--text); background:var(--panel2); border:1px solid var(--border);
+  }
+  button.btn:hover{ border-color:#3a4152; }
+  button.btn.primary{ background:var(--accent2); border-color:var(--accent2); color:white; }
+  button.btn.primary:hover{ background:var(--accent); }
+  button.btn.ghost{ background:transparent; }
+  button.btn.danger{ color:#ffb4b6; }
+
+  .events{ display:flex; flex-direction:column; gap:12px; }
+  .event-card{
+    background:var(--panel2); border:1px solid var(--border); border-radius:12px; padding:14px;
+  }
+  .event-card .row{ display:flex; gap:8px; margin-bottom:8px; }
+  .event-card label{ font-size:11px; color:var(--muted); display:block; margin-bottom:4px; text-transform:uppercase; letter-spacing:.03em; }
+  .event-card input[type=text], .event-card input[type=date], .event-card input[type=time]{
+    width:100%; background:var(--bg); border:1px solid var(--border); border-radius:8px;
+    color:var(--text); padding:8px 10px; font-size:14px; font-family:inherit;
+  }
+  .event-card .field{ flex:1; min-width:0; }
+  .event-actions{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .event-actions a, .event-actions button{ text-decoration:none; }
+  .badge{
+    display:inline-block; font-size:10.5px; padding:2px 8px; border-radius:20px;
+    background:rgba(124,107,255,.15); color:#b5a9ff; margin-bottom:8px; font-weight:600;
+  }
+  .empty{ color:var(--muted); font-size:13px; text-align:center; padding:12px 0; }
+
+  .notes{ display:flex; flex-direction:column; gap:10px; max-height:340px; overflow:auto; }
+  .note{
+    background:var(--panel2); border:1px solid var(--border); border-radius:10px; padding:10px 12px;
+    font-size:14px; line-height:1.45; position:relative;
+  }
+  .note .meta{ font-size:11px; color:var(--muted); margin-bottom:4px; display:flex; justify-content:space-between; gap:8px;}
+  .note .del{ position:absolute; top:8px; right:8px; background:none; border:none; color:var(--muted); cursor:pointer; font-size:14px; }
+
+  .settings-grid{ display:flex; flex-direction:column; gap:10px; }
+  .settings-grid label{ font-size:12.5px; color:var(--muted); }
+  .settings-grid input, .settings-grid textarea{
+    width:100%; background:var(--panel2); border:1px solid var(--border); border-radius:8px;
+    color:var(--text); padding:9px 10px; font-size:13.5px; font-family:inherit;
+  }
+  .settings-grid textarea{ min-height:90px; font-family:ui-monospace,monospace; font-size:12px; }
+  .sync-status{ font-size:12.5px; margin-top:6px; }
+  .sync-status.ok{ color:var(--good); }
+  .sync-status.off{ color:var(--muted); }
+  .sync-status.err{ color:var(--danger); }
+
+  details summary{ cursor:pointer; color:var(--accent); font-size:13px; margin-top:4px; }
+  footer{ text-align:center; color:var(--muted); font-size:12px; padding:24px 16px 4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎙️ Diktafón & Asistent</h1>
+  <p>Diktuj text, hovor príkazy pre kalendár — funguje na telefóne aj počítači</p>
+</header>
+
+<main>
+
+  <section class="card">
+    <h2>Diktovanie</h2>
+    <div class="mic-row">
+      <button id="micBtn" class="mic-btn" title="Diktovať">🎤</button>
+      <div id="micStatus" class="mic-status">Klikni a diktuj</div>
+      <div id="micUnsupported" class="mic-unsupported" style="display:none">
+        Tento prehliadač nepodporuje priebežné rozpoznávanie reči (typicky iPhone/Safari).
+        Použi mikrofón priamo na klávesnici telefónu — klepni do textového poľa nižšie a stlač
+        ikonu mikrofónu na klávesnici. Appka aj tak nájde príkazy pre kalendár v napísanom texte.
+      </div>
+    </div>
+
+    <div style="margin-top:16px;">
+      <textarea id="transcript" placeholder="Sem sa bude zapisovať prepis... (alebo diktuj priamo cez mikrofón na klávesnici)"></textarea>
+      <div class="toolbar">
+        <button class="btn primary" id="scanBtn">🔎 Nájsť príkazy v texte</button>
+        <button class="btn" id="saveNoteBtn">💾 Uložiť ako poznámku</button>
+        <button class="btn ghost" id="clearBtn">Vymazať text</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Rozpoznané udalosti do kalendára</h2>
+    <div id="events" class="events">
+      <div class="empty">Zatiaľ nič. Skús povedať napr. „zapíš do kalendára poradu s Petrom zajtra o 15:00“.</div>
+    </div>
+    <details style="margin-top:8px;">
+      <summary>Aké príkazy appka rozumie?</summary>
+      <div style="font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.6;">
+        Spúšťacie frázy: <em>„zapíš do kalendára…“, „pridaj do kalendára…“, „vytvor udalosť…“,
+        „naplánuj…“, „dohodni schôdzku…“, „nastav pripomienku…“</em><br>
+        Dátum: <em>dnes, zajtra, pozajtra, v pondelok/utorok/…, 20.8., 20. augusta</em><br>
+        Čas: <em>o 15:00, o 9, o desiatej</em> (ak čas chýba, vytvorí sa celodenná udalosť)<br>
+        Výsledok si vždy môžeš pred pridaním opraviť.
+      </div>
+    </details>
+  </section>
+
+  <section class="card">
+    <h2>Poznámky (uložené na tomto zariadení, prípadne synchronizované)</h2>
+    <div id="notes" class="notes">
+      <div class="empty">Zatiaľ žiadne uložené poznámky.</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Synchronizácia medzi telefónom a počítačom</h2>
+    <p style="font-size:13px;color:var(--muted);margin-top:-4px;">
+      Voliteľné. Bez nastavenia appka funguje samostatne na každom zariadení (dáta sa ukladajú len lokálne v prehliadači).
+      Pre živú synchronizáciu medzi zariadeniami vlož nižšie konfiguráciu vlastného <strong>Firebase</strong> projektu (zdarma)
+      a rovnaký „párovací kód“ na oboch zariadeniach.
+    </p>
+    <div class="settings-grid" style="margin-top:10px;">
+      <label>Firebase config (JSON, z Firebase Console → Project settings → Web app)</label>
+      <textarea id="fbConfig" placeholder='{"apiKey":"...","authDomain":"...","projectId":"...", ...}'></textarea>
+      <label>Párovací kód (rovnaký na oboch zariadeniach, napr. „peter-notes-2026“)</label>
+      <input type="text" id="pairCode" placeholder="napr. peter-notes-2026">
+      <div style="display:flex; gap:8px;">
+        <button class="btn primary" id="connectSyncBtn">🔗 Pripojiť synchronizáciu</button>
+        <button class="btn ghost" id="disconnectSyncBtn">Odpojiť</button>
+      </div>
+      <div id="syncStatus" class="sync-status off">Synchronizácia vypnutá — dáta sú len lokálne.</div>
+    </div>
+    <details style="margin-top:10px;">
+      <summary>Ako si zadarmo nastavím Firebase (5 minút)</summary>
+      <ol style="font-size:12.5px;color:var(--muted);line-height:1.7;padding-left:18px;">
+        <li>Choď na <strong>console.firebase.google.com</strong> a prihlás sa svojím Google účtom.</li>
+        <li>„Add project“ → zadaj názov (napr. „moj-diktafon“) → vytvoriť.</li>
+        <li>V projekte klikni na ikonu <strong>&lt;/&gt; Web</strong> a zaregistruj webovú appku (nezaškrtávaj Hosting).</li>
+        <li>Skopíruj vygenerovaný <code>firebaseConfig</code> objekt a vlož ho do poľa vyššie.</li>
+        <li>V ľavom menu choď na <strong>Firestore Database → Create database</strong> → zvoľ „Start in test mode“.</li>
+        <li>Zadaj rovnaký párovací kód na telefóne aj počítači a klikni „Pripojiť synchronizáciu“.</li>
+      </ol>
+      <p style="font-size:12px;color:var(--warn);">
+        Pozn.: „Test mode“ v Firestore je verejne zapisovateľné cca 30 dní. Pre dlhodobé použitie si nastav
+        prísnejšie Firestore Security Rules (viazané napr. na Firebase Auth).
+      </p>
+    </details>
+  </section>
+
+  <section class="card">
+    <h2>Nastavenia</h2>
+    <div class="settings-grid">
+      <label>Jazyk rozpoznávania reči</label>
+      <input type="text" id="langInput" value="sk-SK">
+      <label style="margin-top:4px;">Predvolená dĺžka udalosti bez uvedeného konca (minúty)</label>
+      <input type="text" id="durInput" value="60">
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Prototyp — beží celý v prehliadači. Pre inštaláciu na plochu telefónu appku hosťuj cez HTTPS (napr. Netlify Drop) — pozri README.
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- Storage helpers ---------------- */
+  const LS_NOTES = "diktafon.notes";
+  const LS_SETTINGS = "diktafon.settings";
+
+  function loadLocalNotes(){
+    try{ return JSON.parse(localStorage.getItem(LS_NOTES) || "[]"); }catch(e){ return []; }
+  }
+  function saveLocalNotes(notes){
+    localStorage.setItem(LS_NOTES, JSON.stringify(notes));
+  }
+  function loadSettings(){
+    try{ return JSON.parse(localStorage.getItem(LS_SETTINGS) || "{}"); }catch(e){ return {}; }
+  }
+  function saveSettings(s){
+    localStorage.setItem(LS_SETTINGS, JSON.stringify(s));
+  }
+
+  let notes = loadLocalNotes();
+  let settings = loadSettings();
+
+  const notesEl = document.getElementById("notes");
+  const transcriptEl = document.getElementById("transcript");
+  const langInput = document.getElementById("langInput");
+  const durInput = document.getElementById("durInput");
+
+  if(settings.lang) langInput.value = settings.lang;
+  if(settings.durMin) durInput.value = settings.durMin;
+
+  function persistSettings(){
+    settings.lang = langInput.value.trim() || "sk-SK";
+    settings.durMin = parseInt(durInput.value,10) || 60;
+    saveSettings(settings);
+  }
+  langInput.addEventListener("change", persistSettings);
+  durInput.addEventListener("change", persistSettings);
+
+  function renderNotes(){
+    if(!notes.length){
+      notesEl.innerHTML = '<div class="empty">Zatiaľ žiadne uložené poznámky.</div>';
+      return;
+    }
+    const sorted = [...notes].sort((a,b)=> b.ts - a.ts);
+    notesEl.innerHTML = sorted.map(n => `
+      <div class="note" data-id="${n.id}">
+        <button class="del" title="Zmazať" data-del="${n.id}">✕</button>
+        <div class="meta"><span>${n.device || "zariadenie"}</span><span>${new Date(n.ts).toLocaleString("sk-SK")}</span></div>
+        <div>${escapeHtml(n.text)}</div>
+      </div>
+    `).join("");
+    notesEl.querySelectorAll("[data-del]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const id = btn.getAttribute("data-del");
+        notes = notes.filter(n=>n.id!==id);
+        saveLocalNotes(notes);
+        renderNotes();
+        syncPush();
+      });
+    });
+  }
+
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  }
+
+  function deviceLabel(){
+    const ua = navigator.userAgent;
+    if(/iPhone|iPad/.test(ua)) return "iPhone/iPad";
+    if(/Android/.test(ua)) return "Android";
+    if(/Mac/.test(ua)) return "Mac";
+    if(/Win/.test(ua)) return "Windows";
+    return "zariadenie";
+  }
+
+  document.getElementById("saveNoteBtn").addEventListener("click", ()=>{
+    const text = transcriptEl.value.trim();
+    if(!text) return;
+    const note = { id: cryptoRandomId(), text, ts: Date.now(), device: deviceLabel() };
+    notes.push(note);
+    saveLocalNotes(notes);
+    renderNotes();
+    syncPush();
+    transcriptEl.value = "";
+  });
+
+  document.getElementById("clearBtn").addEventListener("click", ()=>{
+    transcriptEl.value = "";
+  });
+
+  function cryptoRandomId(){
+    return Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+  }
+
+  renderNotes();
+
+  /* ---------------- Speech recognition ---------------- */
+  const micBtn = document.getElementById("micBtn");
+  const micStatus = document.getElementById("micStatus");
+  const micUnsupported = document.getElementById("micUnsupported");
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recognition = null;
+  let listening = false;
+  let finalBuffer = "";
+
+  if(!SR){
+    micBtn.disabled = true;
+    micBtn.style.opacity = 0.4;
+    micStatus.textContent = "Nepodporované v tomto prehliadači";
+    micUnsupported.style.display = "block";
+  } else {
+    recognition = new SR();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onstart = ()=>{
+      listening = true;
+      micBtn.classList.add("listening");
+      micStatus.textContent = "Počúvam… (klikni pre zastavenie)";
+    };
+    recognition.onend = ()=>{
+      listening = false;
+      micBtn.classList.remove("listening");
+      micStatus.textContent = "Klikni a diktuj";
+    };
+    recognition.onerror = (e)=>{
+      micStatus.textContent = "Chyba rozpoznávania: " + e.error;
+    };
+    recognition.onresult = (event)=>{
+      let interim = "";
+      for(let i = event.resultIndex; i < event.results.length; i++){
+        const r = event.results[i];
+        if(r.isFinal){
+          finalBuffer += r[0].transcript + " ";
+        } else {
+          interim += r[0].transcript;
+        }
+      }
+      transcriptEl.value = (finalBuffer + interim).trim();
+      if(finalBuffer.length){
+        scanForCommands(transcriptEl.value);
+      }
+    };
+
+    micBtn.addEventListener("click", ()=>{
+      if(listening){
+        recognition.stop();
+        return;
+      }
+      recognition.lang = (langInput.value.trim() || "sk-SK");
+      finalBuffer = transcriptEl.value ? transcriptEl.value + " " : "";
+      try{
+        recognition.start();
+      }catch(e){
+        micStatus.textContent = "Nepodarilo sa spustiť mikrofón: " + e.message;
+      }
+    });
+  }
+
+  document.getElementById("scanBtn").addEventListener("click", ()=>{
+    scanForCommands(transcriptEl.value);
+  });
+
+  /* ---------------- Slovak calendar-command parsing ---------------- */
+
+  const TRIGGERS = [
+    "zapíš do kalendára","zapis do kalendara",
+    "pridaj do kalendára","pridaj do kalendara",
+    "vytvor udalosť","vytvor udalost",
+    "naplánuj","naplanuj",
+    "dohodni schôdzku","dohodni schodzku",
+    "priprav stretnutie",
+    "nastav pripomienku","vytvor pripomienku"
+  ];
+
+  const WEEKDAYS = {
+    "nedeľu":0,"nedelu":0,"pondelok":1,"utorok":2,"stredu":3,"štvrtok":4,"stvrtok":4,
+    "piatok":5,"sobotu":6
+  };
+
+  const MONTHS = {
+    "januára":1,"januara":1,"jan":1,
+    "februára":2,"februara":2,"feb":2,
+    "marca":3,"mar":3,
+    "apríla":4,"aprila":4,"apr":4,
+    "mája":5,"maja":5,"maj":5,
+    "júna":6,"juna":6,"jun":6,
+    "júla":7,"jula":7,"jul":7,
+    "augusta":8,"aug":8,
+    "septembra":9,"sep":9,
+    "októbra":10,"oktobra":10,"okt":10,
+    "novembra":11,"nov":11,
+    "decembra":12,"dec":12
+  };
+
+  const HOUR_WORDS = {
+    "jednej":1,"druhej":2,"tretej":3,"štvrtej":4,"stvrtej":4,"piatej":5,"šiestej":6,"siestej":6,
+    "siedmej":7,"ôsmej":8,"osmej":8,"deviatej":9,"desiatej":10,"jedenástej":11,"jedenastej":11,
+    "dvanástej":12,"dvanastej":12,"trinástej":13,"trinastej":13,"štrnástej":14,"strnastej":14,
+    "pätnástej":15,"patnastej":15,"šestnástej":16,"sestnastej":16,"sedemnástej":17,"sedemnastej":17,
+    "osemnástej":18,"osemnastej":18,"devätnástej":19,"devatnastej":19,"dvadsiatej":20
+  };
+
+  function stripDiacritics(s){
+    return s.normalize("NFD").replace(/[̀-ͯ]/g,"");
+  }
+
+  let processedSentences = new Set();
+
+  function scanForCommands(fullText){
+    if(!fullText) return;
+    // Split into rough sentences/clauses
+    const parts = fullText.split(/(?<=[.!?])\s+|,\s+(?=(a |potom |tiež |taktiež ))/i).length > 1
+      ? fullText.split(/(?<=[.!?])\s+/)
+      : [fullText];
+
+    parts.forEach(sentence=>{
+      const key = sentence.trim().toLowerCase();
+      if(!key || processedSentences.has(key)) return;
+      const lower = stripDiacritics(sentence.toLowerCase());
+      const trigger = TRIGGERS.find(t => lower.includes(stripDiacritics(t)));
+      if(trigger){
+        processedSentences.add(key);
+        const parsed = parseEventFromSentence(sentence, trigger);
+        addEventCard(parsed);
+      }
+    });
+  }
+
+  function parseEventFromSentence(sentence, triggerUsed){
+    let working = sentence;
+    // remove trigger phrase (case-insensitive, diacritic-insensitive) - find actual substring to remove
+    const lowerFull = stripDiacritics(working.toLowerCase());
+    const idx = lowerFull.indexOf(stripDiacritics(triggerUsed));
+    if(idx >= 0){
+      working = working.slice(0, idx) + working.slice(idx + triggerUsed.length);
+    }
+
+    let dateObj = null;
+    let hasExplicitDate = false;
+    let hour = null, minute = 0;
+    let hasTime = false;
+
+    const lower = stripDiacritics(working.toLowerCase());
+
+    // dnes / zajtra / pozajtra
+    if(/\bpozajtra\b/.test(lower)){
+      dateObj = addDays(new Date(),2); hasExplicitDate = true;
+      working = working.replace(/pozajtra/i,"");
+    } else if(/\bzajtra\b/.test(lower)){
+      dateObj = addDays(new Date(),1); hasExplicitDate = true;
+      working = working.replace(/zajtra/i,"");
+    } else if(/\bdnes\b/.test(lower)){
+      dateObj = new Date(); hasExplicitDate = true;
+      working = working.replace(/dnes/i,"");
+    }
+
+    // weekday: "v pondelok" etc.
+    if(!hasExplicitDate){
+      for(const wd in WEEKDAYS){
+        const re = new RegExp("\\bv\\s+" + wd + "\\b", "i");
+        if(re.test(stripDiacritics(working.toLowerCase()))){
+          dateObj = nextWeekday(WEEKDAYS[wd]);
+          hasExplicitDate = true;
+          working = working.replace(new RegExp("v\\s+" + wd, "i"), "");
+          break;
+        }
+      }
+    }
+
+    // explicit date DD.MM.(YYYY)?
+    if(!hasExplicitDate){
+      const m = working.match(/\b(\d{1,2})\.\s?(\d{1,2})\.(\s?\d{2,4})?/);
+      if(m){
+        const d = parseInt(m[1],10), mo = parseInt(m[2],10);
+        let y = m[3] ? parseInt(m[3].trim(),10) : new Date().getFullYear();
+        if(y < 100) y += 2000;
+        dateObj = new Date(y, mo-1, d);
+        hasExplicitDate = true;
+        working = working.replace(m[0],"");
+      }
+    }
+
+    // "20. augusta" style
+    if(!hasExplicitDate){
+      const mLower = stripDiacritics(working.toLowerCase());
+      const dm = mLower.match(/\b(\d{1,2})\.?\s+([a-z]+)\b/);
+      if(dm){
+        const monthKey = Object.keys(MONTHS).find(k => stripDiacritics(k) === dm[2]);
+        if(monthKey){
+          const d = parseInt(dm[1],10);
+          const mo = MONTHS[monthKey];
+          const y = new Date().getFullYear();
+          dateObj = new Date(y, mo-1, d);
+          hasExplicitDate = true;
+          working = working.replace(new RegExp(dm[1]+"\\.?\\s+"+dm[2],"i"), "");
+        }
+      }
+    }
+
+    if(!dateObj){
+      dateObj = new Date(); // default to today
+    }
+
+    // time: "o 15:00" / "o 15.00" / "o 9" / "o desiatej"
+    let tm = working.match(/\bo\s+(\d{1,2})[:.](\d{2})\b/i);
+    if(tm){
+      hour = parseInt(tm[1],10); minute = parseInt(tm[2],10); hasTime = true;
+      working = working.replace(tm[0],"");
+    } else {
+      tm = working.match(/\bo\s+(\d{1,2})\s*(?:hod(?:ine)?)?\b/i);
+      if(tm){
+        hour = parseInt(tm[1],10); minute = 0; hasTime = true;
+        working = working.replace(tm[0],"");
+      } else {
+        const lw = stripDiacritics(working.toLowerCase());
+        for(const w in HOUR_WORDS){
+          const re = new RegExp("\\bo\\s+"+stripDiacritics(w)+"\\b");
+          if(re.test(lw)){
+            hour = HOUR_WORDS[w]; minute = 0; hasTime = true;
+            working = working.replace(new RegExp("o\\s+"+w,"i"), "");
+            break;
+          }
+        }
+      }
+    }
+
+    // cleanup title
+    let title = working
+      .replace(/\s{2,}/g," ")
+      .replace(/^[\s,.-]+|[\s,.-]+$/g,"")
+      .trim();
+    if(!title) title = "Nová udalosť";
+    title = title.charAt(0).toUpperCase() + title.slice(1);
+
+    return { title, dateObj, hasTime, hour, minute };
+  }
+
+  function addDays(d, n){
+    const r = new Date(d);
+    r.setDate(r.getDate()+n);
+    return r;
+  }
+  function nextWeekday(targetDow){
+    const d = new Date();
+    const cur = d.getDay();
+    let diff = (targetDow - cur + 7) % 7;
+    if(diff === 0) diff = 7;
+    return addDays(d, diff);
+  }
+  function pad(n){ return n.toString().padStart(2,"0"); }
+  function ymd(d){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+
+  /* ---------------- Event cards / calendar links ---------------- */
+  const eventsEl = document.getElementById("events");
+  let eventCounter = 0;
+
+  function addEventCard(parsed){
+    eventCounter++;
+    const id = "ev"+eventCounter;
+    const emptyMsg = eventsEl.querySelector(".empty");
+    if(emptyMsg) emptyMsg.remove();
+
+    const durMin = parseInt(durInput.value,10) || 60;
+    const timeVal = parsed.hasTime ? pad(parsed.hour)+":"+pad(parsed.minute) : "";
+
+    const card = document.createElement("div");
+    card.className = "event-card";
+    card.id = id;
+    card.innerHTML = `
+      <span class="badge">Rozpoznaná udalosť</span>
+      <div class="row">
+        <div class="field">
+          <label>Názov</label>
+          <input type="text" class="f-title" value="${escapeHtml(parsed.title)}">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Dátum</label>
+          <input type="date" class="f-date" value="${ymd(parsed.dateObj)}">
+        </div>
+        <div class="field">
+          <label>Čas (prázdne = celý deň)</label>
+          <input type="time" class="f-time" value="${timeVal}">
+        </div>
+      </div>
+      <div class="event-actions">
+        <a class="btn primary" data-action="google" href="#" target="_blank" rel="noopener">📅 Google Kalendár</a>
+        <a class="btn" data-action="outlook" href="#" target="_blank" rel="noopener">📧 Outlook</a>
+        <button class="btn" data-action="ics">🍎 Stiahnuť .ics (Apple/iné)</button>
+        <button class="btn danger ghost" data-action="dismiss">Zrušiť</button>
+      </div>
+    `;
+    eventsEl.prepend(card);
+
+    function currentData(){
+      const title = card.querySelector(".f-title").value.trim() || "Udalosť";
+      const dateStr = card.querySelector(".f-date").value;
+      const timeStr = card.querySelector(".f-time").value;
+      const [y,mo,da] = dateStr.split("-").map(Number);
+      let start, end, allDay;
+      if(timeStr){
+        const [h,mi] = timeStr.split(":").map(Number);
+        start = new Date(y, mo-1, da, h, mi);
+        end = new Date(start.getTime() + durMin*60000);
+        allDay = false;
+      } else {
+        start = new Date(y, mo-1, da);
+        end = addDays(start,1);
+        allDay = true;
+      }
+      return {title, start, end, allDay};
+    }
+
+    function fmtGoogle(d, allDay){
+      if(allDay) return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate());
+      return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+"T"+pad(d.getHours())+pad(d.getMinutes())+"00";
+    }
+    function fmtOutlook(d){
+      return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+"T"+pad(d.getHours())+":"+pad(d.getMinutes())+":00";
+    }
+    function fmtICS(d){
+      return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+"T"+pad(d.getHours())+pad(d.getMinutes())+"00";
+    }
+
+    function refreshLinks(){
+      const {title, start, end, allDay} = currentData();
+      const gLink = "https://calendar.google.com/calendar/render?action=TEMPLATE"
+        + "&text=" + encodeURIComponent(title)
+        + "&dates=" + fmtGoogle(start,allDay) + "/" + fmtGoogle(end,allDay);
+      card.querySelector('[data-action="google"]').href = gLink;
+
+      const oLink = "https://outlook.office.com/calendar/0/deeplink/compose?path=/calendar/action/compose&rru=addevent"
+        + "&subject=" + encodeURIComponent(title)
+        + "&startdt=" + encodeURIComponent(fmtOutlook(start))
+        + "&enddt=" + encodeURIComponent(fmtOutlook(end))
+        + "&allday=" + (allDay ? "true":"false");
+      card.querySelector('[data-action="outlook"]').href = oLink;
+    }
+    refreshLinks();
+    card.querySelectorAll("input").forEach(inp=> inp.addEventListener("input", refreshLinks));
+
+    card.querySelector('[data-action="ics"]').addEventListener("click", ()=>{
+      const {title, start, end, allDay} = currentData();
+      const uid = cryptoRandomId()+"@diktafon";
+      const ics = [
+        "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Diktafon Asistent//SK","CALSCALE:GREGORIAN",
+        "BEGIN:VEVENT",
+        "UID:"+uid,
+        "DTSTAMP:"+fmtICS(new Date())+"Z",
+        allDay ? ("DTSTART;VALUE=DATE:"+ymd(start).replace(/-/g,"")) : ("DTSTART:"+fmtICS(start)),
+        allDay ? ("DTEND;VALUE=DATE:"+ymd(end).replace(/-/g,"")) : ("DTEND:"+fmtICS(end)),
+        "SUMMARY:"+title.replace(/([,;])/g,"\\$1"),
+        "END:VEVENT","END:VCALENDAR"
+      ].join("\r\n");
+      const blob = new Blob([ics], {type:"text/calendar"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = title.replace(/[^\w\-]+/g,"_") + ".ics";
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    card.querySelector('[data-action="dismiss"]').addEventListener("click", ()=>{
+      card.remove();
+      if(!eventsEl.children.length){
+        eventsEl.innerHTML = '<div class="empty">Zatiaľ nič. Skús povedať napr. „zapíš do kalendára poradu s Petrom zajtra o 15:00“.</div>';
+      }
+    });
+  }
+
+  /* ---------------- Optional Firebase sync ---------------- */
+  const fbConfigEl = document.getElementById("fbConfig");
+  const pairCodeEl = document.getElementById("pairCode");
+  const syncStatusEl = document.getElementById("syncStatus");
+
+  if(settings.fbConfig) fbConfigEl.value = settings.fbConfig;
+  if(settings.pairCode) pairCodeEl.value = settings.pairCode;
+
+  let fbApp = null, fbDb = null, fbUnsub = null;
+
+  function loadFirebaseSdk(cb){
+    if(window.firebase && window.firebase.firestore){ cb(); return; }
+    const s1 = document.createElement("script");
+    s1.src = "https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js";
+    s1.onload = ()=>{
+      const s2 = document.createElement("script");
+      s2.src = "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js";
+      s2.onload = cb;
+      s2.onerror = ()=> setSyncStatus("err","Nepodarilo sa načítať Firebase SDK (skontroluj pripojenie na internet).");
+      document.head.appendChild(s2);
+    };
+    s1.onerror = ()=> setSyncStatus("err","Nepodarilo sa načítať Firebase SDK.");
+    document.head.appendChild(s1);
+  }
+
+  function setSyncStatus(kind, msg){
+    syncStatusEl.className = "sync-status " + kind;
+    syncStatusEl.textContent = msg;
+  }
+
+  document.getElementById("connectSyncBtn").addEventListener("click", ()=>{
+    const cfgText = fbConfigEl.value.trim();
+    const pairCode = pairCodeEl.value.trim();
+    if(!cfgText || !pairCode){
+      setSyncStatus("err","Vyplň Firebase config aj párovací kód.");
+      return;
+    }
+    let cfg;
+    try{ cfg = JSON.parse(cfgText); }
+    catch(e){ setSyncStatus("err","Firebase config nie je platný JSON."); return; }
+
+    settings.fbConfig = cfgText;
+    settings.pairCode = pairCode;
+    saveSettings(settings);
+
+    setSyncStatus("off","Pripájam sa…");
+    loadFirebaseSdk(()=>{
+      try{
+        fbApp = firebase.apps.length ? firebase.app() : firebase.initializeApp(cfg);
+        fbDb = firebase.firestore();
+        const docRef = fbDb.collection("diktafon_sync").doc(pairCode);
+        if(fbUnsub) fbUnsub();
+        fbUnsub = docRef.onSnapshot(snap=>{
+          if(snap.exists){
+            const remote = snap.data().notes || [];
+            notes = mergeNotes(notes, remote);
+            saveLocalNotes(notes);
+            renderNotes();
+          }
+          setSyncStatus("ok","Synchronizácia aktívna (kód: "+pairCode+")");
+        }, err=>{
+          setSyncStatus("err","Chyba synchronizácie: "+err.message);
+        });
+      }catch(e){
+        setSyncStatus("err","Chyba Firebase: "+e.message);
+      }
+    });
+  });
+
+  document.getElementById("disconnectSyncBtn").addEventListener("click", ()=>{
+    if(fbUnsub){ fbUnsub(); fbUnsub = null; }
+    setSyncStatus("off","Synchronizácia vypnutá — dáta sú len lokálne.");
+  });
+
+  function mergeNotes(local, remote){
+    const byId = new Map();
+    [...local, ...remote].forEach(n => byId.set(n.id, n));
+    return Array.from(byId.values());
+  }
+
+  function syncPush(){
+    if(!fbDb || !settings.pairCode) return;
+    fbDb.collection("diktafon_sync").doc(settings.pairCode).set({ notes, updatedAt: Date.now() })
+      .catch(err => setSyncStatus("err","Nepodarilo sa uložiť: "+err.message));
+  }
+
+  // auto-connect if previously configured
+  if(settings.fbConfig && settings.pairCode){
+    document.getElementById("connectSyncBtn").click();
+  }
+
+  /* ---------------- Service worker (best-effort) ---------------- */
+  if("serviceWorker" in navigator){
+    window.addEventListener("load", ()=>{
+      navigator.serviceWorker.register("sw.js").catch(()=>{});
+    });
+  }
+
+})();
+</script>
+</body>
+</html>
