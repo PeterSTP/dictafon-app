@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#0b0d10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="IPSC Stopky">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
+<title>IPSC Stopky</title>
+<style>
+  :root{
+    --bg:#0b0d10; --panel:#151920; --panel2:#1d222b; --line:#2a303b;
+    --text:#e8ebf0; --muted:#8b93a1; --accent:#ff6a1a; --ok:#3ecf72; --warn:#ffcc33; --bad:#ff4d4d;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+  body{min-height:100vh;display:flex;flex-direction:column;user-select:none;-webkit-user-select:none}
+  header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)}
+  header h1{font-size:17px;margin:0;letter-spacing:.5px}
+  header h1 span{color:var(--accent)}
+  .tabs{display:flex;gap:4px}
+  .tabs button{background:none;border:1px solid var(--line);color:var(--muted);padding:6px 10px;border-radius:8px;font-size:13px}
+  .tabs button.on{color:var(--text);border-color:var(--accent);background:#ff6a1a18}
+  main{flex:1;padding:14px 16px 24px;max-width:560px;width:100%;margin:0 auto}
+  .view{display:none}.view.on{display:block}
+
+  .big{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 16px 14px;text-align:center}
+  .state{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);min-height:18px}
+  .state.ready{color:var(--warn)} .state.live{color:var(--ok)} .state.done{color:var(--accent)}
+  .time{font-variant-numeric:tabular-nums;font-size:76px;font-weight:700;line-height:1.05;margin:6px 0 4px;font-family:ui-monospace,"SF Mono",Menlo,monospace}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+  .stat{background:var(--panel2);border-radius:10px;padding:8px 4px}
+  .stat b{display:block;font-size:18px;font-variant-numeric:tabular-nums;font-family:ui-monospace,Menlo,monospace}
+  .stat small{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+
+  .meter{height:8px;background:var(--panel2);border-radius:4px;margin-top:12px;position:relative;overflow:hidden}
+  .meter i{position:absolute;left:0;top:0;bottom:0;background:var(--ok);width:0;transition:width 40ms linear}
+  .meter em{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--bad)}
+  .micnote{font-size:12px;color:var(--muted);margin-top:8px;min-height:16px}
+  .micnote.err{color:var(--bad)}
+
+  .btnrow{display:flex;gap:10px;margin-top:14px}
+  .btn{flex:1;border:none;border-radius:14px;padding:20px 10px;font-size:20px;font-weight:700;letter-spacing:1px;color:#fff;background:var(--panel2)}
+  .btn.go{background:var(--accent)} .btn.stop{background:var(--bad)} .btn.sec{font-size:15px;font-weight:600;flex:.55}
+  .btn:active{transform:scale(.98)}
+  .btn:disabled{opacity:.35}
+
+  .modes{display:flex;gap:6px;margin-top:12px}
+  .modes button{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--muted);padding:9px 4px;border-radius:10px;font-size:13px}
+  .modes button.on{color:var(--text);border-color:var(--accent)}
+
+  h2{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin:20px 0 8px}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+  td,th{padding:9px 6px;border-bottom:1px solid var(--line);text-align:right;font-family:ui-monospace,Menlo,monospace;font-size:16px}
+  th{font-family:inherit;font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:1px}
+  td:first-child,th:first-child{text-align:left;color:var(--muted)}
+  td.best{color:var(--ok)} td.worst{color:var(--warn)}
+  .x{background:none;border:none;color:var(--muted);font-size:18px;padding:0 4px}
+  .empty{color:var(--muted);font-size:14px;padding:12px 0}
+
+  .hf{display:flex;gap:8px;align-items:center;margin-top:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  .hf input{width:80px;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:8px;font-size:16px}
+  .hf b{margin-left:auto;font-size:20px;font-family:ui-monospace,Menlo,monospace;color:var(--accent)}
+
+  .set{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:4px 14px;margin-bottom:12px}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:none}
+  .row label{font-size:15px}
+  .row small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+  .row output{font-family:ui-monospace,Menlo,monospace;color:var(--accent);min-width:64px;text-align:right}
+  .row input[type=range]{width:100%;accent-color:var(--accent)}
+  .stack{display:block}
+  .stack .top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .seg{display:flex;gap:4px}
+  .seg button{background:var(--panel2);border:1px solid var(--line);color:var(--muted);padding:7px 10px;border-radius:8px;font-size:13px}
+  .seg button.on{color:var(--text);border-color:var(--accent)}
+  .tbtn{background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:8px 12px;border-radius:8px;font-size:14px}
+
+  .hist{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+  .hist .h1{display:flex;justify-content:space-between;font-family:ui-monospace,Menlo,monospace}
+  .hist .h1 b{font-size:20px}
+  .hist .h2{color:var(--muted);font-size:12px;margin-top:4px}
+  .hist .h3{color:var(--muted);font-size:12px;margin-top:4px;font-family:ui-monospace,Menlo,monospace;word-break:break-word}
+  .sum{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+  .flash{animation:fl .35s ease-out}
+  @keyframes fl{from{background:#3ecf7240}to{background:var(--panel)}}
+  .dialog{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:20px;z-index:9}
+  .dialog.on{display:flex}
+  .dialog div{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:340px}
+  .dialog p{margin:0 0 14px;line-height:1.4}
+</style>
+</head>
+<body>
+<header>
+  <h1>IPSC <span>STOPKY</span></h1>
+  <div class="tabs">
+    <button data-v="timer" class="on">Stopky</button>
+    <button data-v="hist">História</button>
+    <button data-v="sett">Nastavenia</button>
+  </div>
+</header>
+
+<main>
+<!-- ============ TIMER ============ -->
+<section class="view on" id="v-timer">
+  <div class="big" id="bigbox">
+    <div class="state" id="state">Pripravené</div>
+    <div class="time" id="time">0.00</div>
+    <div class="stats">
+      <div class="stat"><b id="sShots">0</b><small>Rány</small></div>
+      <div class="stat"><b id="sFirst">–</b><small>1. rana</small></div>
+      <div class="stat"><b id="sBest">–</b><small>Best split</small></div>
+      <div class="stat"><b id="sAvg">–</b><small>Ø split</small></div>
+    </div>
+    <div class="meter" id="meter"><i id="lvl"></i><em id="thr"></em></div>
+    <div class="micnote" id="micnote"></div>
+  </div>
+
+  <div class="modes" id="modes">
+    <button data-m="live" class="on">🔫 Ostré (mikrofón)</button>
+    <button data-m="dry">✋ Suchý tréning</button>
+  </div>
+
+  <div class="btnrow">
+    <button class="btn go" id="startBtn">ŠTART</button>
+    <button class="btn sec" id="againBtn" disabled>Znova</button>
+  </div>
+
+  <div class="hf" id="hfbox" style="display:none">
+    <span>Body</span><input id="pts" type="number" inputmode="numeric" min="0" placeholder="0">
+    <span style="color:var(--muted);font-size:13px">HF</span><b id="hf">–</b>
+  </div>
+
+  <h2>Rany</h2>
+  <div id="shots"><div class="empty">Zatiaľ žiadne rany.</div></div>
+</section>
+
+<!-- ============ HISTORY ============ -->
+<section class="view" id="v-hist">
+  <div class="sum">
+    <div class="stat"><b id="hN">0</b><small>Pokusov</small></div>
+    <div class="stat"><b id="hBestT">–</b><small>Best čas</small></div>
+    <div class="stat"><b id="hBestF">–</b><small>Best 1. rana</small></div>
+  </div>
+  <div id="histList"></div>
+  <button class="tbtn" id="clearHist" style="margin-top:8px">Vymazať históriu</button>
+</section>
+
+<!-- ============ SETTINGS ============ -->
+<section class="view" id="v-sett">
+  <h2>Štart</h2>
+  <div class="set">
+    <div class="row">
+      <div><label>Oneskorenie štartu</label><small>Čas medzi „Pripravený“ a pípnutím</small></div>
+      <div class="seg" id="delayMode"><button data-d="random" class="on">Náhodné</button><button data-d="fixed">Pevné</button><button data-d="instant">Hneď</button></div>
+    </div>
+    <div class="row stack" id="rowDmin">
+      <div class="top"><label id="dminLbl">Min</label><output id="oDmin"></output></div>
+      <input type="range" id="dmin" min="0.5" max="6" step="0.1">
+    </div>
+    <div class="row stack" id="rowDmax">
+      <div class="top"><label>Max</label><output id="oDmax"></output></div>
+      <input type="range" id="dmax" min="1" max="8" step="0.1">
+    </div>
+  </div>
+
+  <h2>Par time</h2>
+  <div class="set">
+    <div class="row stack">
+      <div class="top"><label>Par čas <small>0 = vypnuté. Druhé pípnutie v tomto čase.</small></label><output id="oPar"></output></div>
+      <input type="range" id="par" min="0" max="10" step="0.05">
+    </div>
+  </div>
+
+  <h2>Detekcia výstrelov</h2>
+  <div class="set">
+    <div class="row stack">
+      <div class="top"><label>Prah citlivosti <small>Nižšie = citlivejšie. Na airsoft/.22 zníž, vonku s veľkou ranou zvýš.</small></label><output id="oThr"></output></div>
+      <input type="range" id="sens" min="0.03" max="0.95" step="0.01">
+    </div>
+    <div class="row stack">
+      <div class="top"><label>Mŕtvy čas (echo) <small>Ignoruj zvuk tak dlho po rane. Indoor 100–150 ms.</small></label><output id="oDead"></output></div>
+      <input type="range" id="dead" min="40" max="300" step="5">
+    </div>
+    <div class="row stack">
+      <div class="top"><label>Auto-stop po tichu</label><output id="oAuto"></output></div>
+      <input type="range" id="auto" min="2" max="30" step="1">
+    </div>
+    <div class="row">
+      <div><label>Test mikrofónu</label><small>Sleduj zelený pruh, červená čiara = prah</small></div>
+      <button class="tbtn" id="micTest">Zapnúť</button>
+    </div>
+  </div>
+
+  <h2>Zvuk</h2>
+  <div class="set">
+    <div class="row stack">
+      <div class="top"><label>Tón pípnutia</label><output id="oFreq"></output></div>
+      <input type="range" id="freq" min="1000" max="4000" step="100">
+    </div>
+    <div class="row">
+      <div><label>Dĺžka pípnutia</label></div>
+      <div class="seg" id="beepLen"><button data-l="0.2">0.2 s</button><button data-l="0.35">0.35 s</button><button data-l="0.5">0.5 s</button></div>
+    </div>
+    <div class="row">
+      <div><label>Vyskúšať pípnutie</label></div>
+      <button class="tbtn" id="beepTest">Pípni</button>
+    </div>
+  </div>
+  <div class="micnote">Tip: pri pípnutí je mikrofón krátko „hluchý“, aby si štartový signál nepomýlil s ranou. Telefón daj do vrecka alebo na opasok, mikrofónom von.</div>
+</section>
+</main>
+
+<div class="dialog" id="dlg"><div><p id="dlgText"></p><div class="btnrow" style="margin-top:0"><button class="btn sec" id="dlgNo">Zrušiť</button><button class="btn go sec" id="dlgYes">Áno</button></div></div></div>
+
+<script>
+(() => {
+  // ---------- storage (safe) ----------
+  const store = {
+    get(k, d){ try{ const v = localStorage.getItem('ipsc_'+k); return v===null? d : JSON.parse(v);}catch(e){return d;} },
+    set(k, v){ try{ localStorage.setItem('ipsc_'+k, JSON.stringify(v)); }catch(e){} }
+  };
+  const defaults = {delayMode:'random', dmin:1.5, dmax:4, par:0, sens:0.35, dead:90, auto:8, freq:2400, beepLen:0.35, mode:'live'};
+  const S = Object.assign({}, defaults, store.get('settings', {}));
+  const saveS = () => store.set('settings', S);
+  let history = store.get('history', []);
+
+  const $ = id => document.getElementById(id);
+  const fmt = t => (t==null||isNaN(t)) ? '–' : t.toFixed(2);
+
+  // ---------- tabs ----------
+  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
+    document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x===b));
+    document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.id==='v-'+b.dataset.v));
+    if (b.dataset.v==='hist') renderHist();
+  });
+
+  // ---------- dialog ----------
+  function ask(text, yes){ $('dlgText').textContent = text; $('dlg').classList.add('on');
+    $('dlgYes').onclick = () => { $('dlg').classList.remove('on'); yes(); };
+    $('dlgNo').onclick = () => $('dlg').classList.remove('on'); }
+
+  // ---------- settings UI ----------
+  function bindRange(id, key, out, f){ const el=$(id); el.value=S[key]; const upd=()=>{ S[key]=parseFloat(el.value); $(out).textContent=f(S[key]); saveS(); updThr(); };
+    el.oninput=upd; $(out).textContent=f(S[key]); }
+  bindRange('dmin','dmin','oDmin', v=>v.toFixed(1)+' s');
+  bindRange('dmax','dmax','oDmax', v=>v.toFixed(1)+' s');
+  bindRange('par','par','oPar', v=> v>0 ? v.toFixed(2)+' s' : 'vyp.');
+  bindRange('sens','sens','oThr', v=> Math.round(v*100)+' %');
+  bindRange('dead','dead','oDead', v=> v+' ms');
+  bindRange('auto','auto','oAuto', v=> v+' s');
+  bindRange('freq','freq','oFreq', v=> v+' Hz');
+  function segBind(id, key, attr, parse, after){ const btns=$(id).querySelectorAll('button');
+    const sync=()=>btns.forEach(b=>b.classList.toggle('on', parse(b.dataset[attr])===S[key]));
+    btns.forEach(b=>b.onclick=()=>{ S[key]=parse(b.dataset[attr]); saveS(); sync(); after&&after(); }); sync(); }
+  const syncDelayRows = () => {
+    $('rowDmin').style.display = S.delayMode==='instant' ? 'none' : '';
+    $('rowDmax').style.display = S.delayMode==='random' ? '' : 'none';
+    $('dminLbl').textContent = S.delayMode==='fixed' ? 'Oneskorenie' : 'Min';
+  };
+  segBind('delayMode','delayMode','d', x=>x, syncDelayRows); syncDelayRows();
+  segBind('beepLen','beepLen','l', parseFloat);
+  function updThr(){ $('thr').style.left = Math.min(99, S.sens*100)+'%'; }
+  updThr();
+
+  // modes
+  const modeBtns = $('modes').querySelectorAll('button');
+  const syncMode = () => { modeBtns.forEach(b=>b.classList.toggle('on', b.dataset.m===S.mode));
+    $('meter').style.display = S.mode==='live' ? '' : 'none';
+    $('micnote').textContent = S.mode==='dry' ? 'Suchý tréning: štart + par pípnutie, mikrofón vypnutý.' : (micErr||'');
+    $('micnote').classList.toggle('err', S.mode==='live' && !!micErr); };
+  modeBtns.forEach(b => b.onclick = () => { if (running) return; S.mode=b.dataset.m; saveS(); syncMode(); });
+
+  // ---------- audio ----------
+  let ctx=null, micStream=null, srcNode=null, proc=null, sink=null, micErr='';
+  let sampleCount = 0;           // number of mic samples processed
+  let sr = 48000;
+  let peakDisplay = 0;
+
+  function ensureCtx(){
+    if (!ctx){ const AC = window.AudioContext||window.webkitAudioContext; ctx = new AC({latencyHint:'interactive'}); sr = ctx.sampleRate; }
+    if (ctx.state==='suspended') ctx.resume();
+    return ctx;
+  }
+
+  function beep(at, len, freq){
+    const c = ensureCtx();
+    const o = c.createOscillator(), g = c.createGain();
+    o.type='square'; o.frequency.value = freq || S.freq;
+    const t = at || c.currentTime;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.9, t+0.005);
+    g.gain.setValueAtTime(0.9, t+len-0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+len);
+    o.connect(g).connect(c.destination); o.start(t); o.stop(t+len+0.02);
+  }
+
+  async function startMic(){
+    if (micStream) return true;
+    ensureCtx();
+    try{
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('nosupport');
+      micStream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false, noiseSuppression:false, autoGainControl:false}});
+    }catch(e){
+      micErr = 'Mikrofón nie je dostupný v tomto okne. Otvor appku priamo v prehliadači (Chrome/Safari) a povoľ mikrofón — alebo použi Suchý tréning.';
+      syncMode(); return false;
+    }
+    micErr=''; syncMode();
+    srcNode = ctx.createMediaStreamSource(micStream);
+    proc = ctx.createScriptProcessor(512, 1, 1);
+    sink = ctx.createGain(); sink.gain.value = 0;
+    proc.onaudioprocess = onAudio;
+    srcNode.connect(proc); proc.connect(sink); sink.connect(ctx.destination);
+    return true;
+  }
+
+  // ---------- run state ----------
+  let running=false, phase='idle';   // idle | wait | live | done
+  let t0Sample=null, expectedBeepSample=0, beepDetectEnd=0, beepOnsetFound=false;
+  let muteUntil=0, parMuteFrom=0, parMuteTo=0, lastShotSample=-1e12, lastSoundSample=0;
+  let shots=[];   // seconds from beep
+  let startTimer=null, rafId=null, perfT0=0, dryEndTimer=null, wakeLock=null;
+
+  function onAudio(ev){
+    const d = ev.inputBuffer.getChannelData(0);
+    const base = sampleCount; sampleCount += d.length;
+    let mx = 0;
+    const thr = S.sens, deadS = S.dead/1000*sr;
+    for (let i=0;i<d.length;i++){
+      const a = Math.abs(d[i]); if (a>mx) mx=a;
+      if (phase!=='live' && phase!=='wait') continue;
+      const s = base+i;
+      // detect beep onset in mic stream to align clock precisely
+      if (!beepOnsetFound && s>=expectedBeepSample-0.03*sr && s<=beepDetectEnd){
+        if (a > 0.04){ t0Sample = s; beepOnsetFound = true; muteUntil = s + (S.beepLen+0.06)*sr; }
+        continue;
+      }
+      if (s < muteUntil) continue;
+      if (s >= parMuteFrom && s <= parMuteTo) continue;
+      if (a >= thr && s - lastShotSample > deadS){
+        lastShotSample = s; lastSoundSample = s;
+        addShot((s - t0Sample)/sr);
+      }
+    }
+    peakDisplay = Math.max(mx, peakDisplay*0.85);
+    if (phase==='live' && sampleCount - Math.max(lastSoundSample, t0Sample) > S.auto*sr) finish();
+  }
+
+  function meterLoop(){
+    $('lvl').style.width = Math.min(100, peakDisplay*100)+'%';
+    $('lvl').style.background = peakDisplay>=S.sens ? 'var(--bad)' : 'var(--ok)';
+    if (phase==='live' || phase==='wait'){
+      const now = phase==='live' ? (performance.now()-perfT0)/1000 : 0;
+      if (phase==='live' && S.mode==='dry') $('time').textContent = fmt(Math.max(0,now));
+      else if (phase==='live' && shots.length===0) $('time').textContent = fmt(Math.max(0,now));
+    }
+    rafId = requestAnimationFrame(meterLoop);
+  }
+
+  function setState(txt, cls){ const el=$('state'); el.textContent=txt; el.className='state '+(cls||''); }
+
+  async function start(){
+    ensureCtx();
+    if (S.mode==='live'){ const ok = await startMic(); if (!ok) return; }
+    try{ if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); }catch(e){}
+    shots=[]; renderShots(); updStats();
+    $('time').textContent='0.00'; $('pts').value=''; $('hf').textContent='–'; $('hfbox').style.display='none';
+    running=true; phase='wait';
+    $('startBtn').textContent='STOP'; $('startBtn').className='btn stop'; $('againBtn').disabled=true;
+    setState('Pozor… pripravený', 'ready');
+    let delay = 0;
+    if (S.delayMode==='random'){ const a=Math.min(S.dmin,S.dmax), b=Math.max(S.dmin,S.dmax); delay = a + Math.random()*(b-a); }
+    else if (S.delayMode==='fixed') delay = S.dmin;
+    delay = Math.max(delay, 0.15);
+    const beepAt = ctx.currentTime + delay;
+    beep(beepAt, S.beepLen);
+    if (S.par>0) beep(beepAt + S.par, S.beepLen, S.freq*0.75);
+    // mic alignment
+    const nowSample = sampleCount;
+    expectedBeepSample = nowSample + delay*sr;
+    beepDetectEnd = expectedBeepSample + 0.35*sr;
+    t0Sample = expectedBeepSample + (ctx.baseLatency||0.01)*sr; beepOnsetFound=false;
+    muteUntil = beepDetectEnd + 0.02*sr; // fallback mute if onset not heard
+    lastShotSample = -1e12; lastSoundSample = expectedBeepSample;
+    if (S.par>0){ parMuteFrom = expectedBeepSample + (S.par-0.03)*sr; parMuteTo = parMuteFrom + (S.beepLen+0.12)*sr; }
+    else { parMuteFrom = parMuteTo = -1; }
+    startTimer = setTimeout(() => {
+      phase='live'; perfT0 = performance.now(); setState(S.mode==='dry'?'Beží':'Strieľaj!', 'live');
+      if (navigator.vibrate) try{navigator.vibrate(80);}catch(e){}
+      if (S.mode==='dry') dryEndTimer = setTimeout(finish, ((S.par>0?S.par:5)+0.8)*1000);
+    }, delay*1000 - 5);
+  }
+
+  function finish(){
+    if (!running) return;
+    running=false; phase='done';
+    clearTimeout(startTimer); clearTimeout(dryEndTimer);
+    try{ wakeLock && wakeLock.release(); }catch(e){} wakeLock=null;
+    $('startBtn').textContent='ŠTART'; $('startBtn').className='btn go'; $('againBtn').disabled=false;
+    if (S.mode==='dry'){ setState('Koniec', 'done'); $('time').textContent = S.par>0 ? fmt(S.par) : '0.00'; return; }
+    setState(shots.length ? 'Hotovo' : 'Žiadna rana', 'done');
+    if (shots.length){ $('time').textContent = fmt(shots[shots.length-1]); $('hfbox').style.display='flex'; saveRun(); }
+    else $('time').textContent='0.00';
+  }
+
+  function cancel(){
+    if (phase==='wait'){
+      clearTimeout(startTimer); running=false; phase='idle';
+      if (ctx){ ctx.close(); ctx=null; micStream&&micStream.getTracks().forEach(t=>t.stop()); micStream=null; sampleCount=0; }
+      $('startBtn').textContent='ŠTART'; $('startBtn').className='btn go'; setState('Zrušené');
+      return;
+    }
+    finish();
+  }
+
+  $('startBtn').onclick = () => running ? cancel() : start();
+  $('againBtn').onclick = () => start();
+
+  // ---------- shots ----------
+  function addShot(t){
+    shots.push(t);
+    // UI updates outside audio thread tick
+    requestAnimationFrame(() => {
+      $('time').textContent = fmt(t); updStats(); renderShots();
+      const bb=$('bigbox'); bb.classList.remove('flash'); void bb.offsetWidth; bb.classList.add('flash');
+    });
+  }
+
+  function splits(arr){ return arr.map((t,i)=> i===0 ? t : t-arr[i-1]); }
+
+  function updStats(){
+    const sp = splits(shots).slice(1);
+    $('sShots').textContent = shots.length;
+    $('sFirst').textContent = shots.length ? fmt(shots[0]) : '–';
+    $('sBest').textContent = sp.length ? fmt(Math.min(...sp)) : '–';
+    $('sAvg').textContent = sp.length ? fmt(sp.reduce((a,b)=>a+b,0)/sp.length) : '–';
+  }
+
+  function renderShots(){
+    const el = $('shots');
+    if (!shots.length){ el.innerHTML='<div class="empty">Zatiaľ žiadne rany.</div>'; return; }
+    const sp = splits(shots), inner = sp.slice(1);
+    const mn = inner.length? Math.min(...inner):null, mxv = inner.length>1? Math.max(...inner):null;
+    let h = '<table><tr><th>#</th><th>Čas</th><th>Split</th><th></th></tr>';
+    for (let i=shots.length-1;i>=0;i--){
+      const cls = i===0 ? '' : (sp[i]===mn ? 'best' : (sp[i]===mxv ? 'worst':''));
+      h += `<tr><td>${i+1}</td><td>${fmt(shots[i])}</td><td class="${cls}">${i===0?'<span style="color:var(--muted)">draw</span> '+fmt(sp[i]):fmt(sp[i])}</td><td>${running?'':`<button class="x" data-i="${i}" title="Odstrániť falošnú ranu">×</button>`}</td></tr>`;
+    }
+    el.innerHTML = h+'</table>';
+    el.querySelectorAll('.x').forEach(b => b.onclick = () => {
+      const i=+b.dataset.i;
+      ask(`Odstrániť ranu #${i+1} (${fmt(shots[i])} s)? Použi pri falošnej detekcii (echo, rana suseda).`, () => {
+        shots.splice(i,1); renderShots(); updStats();
+        $('time').textContent = shots.length? fmt(shots[shots.length-1]) : '0.00';
+        updateLastRun(); calcHF();
+      });
+    });
+  }
+
+  // ---------- hit factor ----------
+  function calcHF(){ const p=parseFloat($('pts').value); const t=shots[shots.length-1];
+    $('hf').textContent = (p>0 && t>0) ? (p/t).toFixed(4) : '–'; updateLastRun(); }
+  $('pts').oninput = calcHF;
+
+  // ---------- history ----------
+  let lastRunId = null;
+  function runObj(){ const p=parseFloat($('pts').value)||null; const t=shots[shots.length-1];
+    return {id:lastRunId, at:Date.now(), shots:shots.slice(), total:t, first:shots[0], par:S.par||null, pts:p, hf:(p&&t)?p/t:null}; }
+  function saveRun(){ lastRunId = Date.now(); history.unshift(runObj()); history = history.slice(0,200); store.set('history', history); }
+  function updateLastRun(){ if (lastRunId==null) return; const i=history.findIndex(h=>h.id===lastRunId); if (i<0) return;
+    if (!shots.length){ history.splice(i,1); lastRunId=null; } else { const o=runObj(); o.at=history[i].at; history[i]=o; }
+    store.set('history', history); }
+
+  function renderHist(){
+    $('hN').textContent = history.length;
+    $('hBestT').textContent = history.length ? fmt(Math.min(...history.map(h=>h.total))) : '–';
+    $('hBestF').textContent = history.length ? fmt(Math.min(...history.map(h=>h.first))) : '–';
+    const el=$('histList');
+    if (!history.length){ el.innerHTML='<div class="empty">História je prázdna. Uloží sa každý pokus s aspoň jednou ranou.</div>'; return; }
+    el.innerHTML = history.map(h=>{
+      const d=new Date(h.at); const sp=splits(h.shots).slice(1);
+      const ds = d.toLocaleDateString('sk-SK',{day:'numeric',month:'numeric'})+' '+d.toLocaleTimeString('sk-SK',{hour:'2-digit',minute:'2-digit'});
+      const parTxt = h.par ? ` · par ${fmt(h.par)} ${h.total<=h.par?'✅':'❌'}` : '';
+      return `<div class="hist"><div class="h1"><b>${fmt(h.total)} s</b><span>${h.shots.length} rán · 1. ${fmt(h.first)}</span></div>
+        <div class="h2">${ds}${parTxt}${h.hf?` · HF ${h.hf.toFixed(4)} (${h.pts} b)`:''}${sp.length?` · Ø split ${fmt(sp.reduce((a,b)=>a+b,0)/sp.length)}`:''}</div>
+        <div class="h3">splity: ${sp.length?sp.map(fmt).join(' / '):'–'}</div></div>`;
+    }).join('');
+  }
+  $('clearHist').onclick = () => ask('Naozaj vymazať celú históriu?', () => { history=[]; store.set('history', history); renderHist(); });
+
+  // ---------- tests ----------
+  $('beepTest').onclick = () => beep(null, S.beepLen);
+  let testing=false;
+  $('micTest').onclick = async () => {
+    if (!testing){ const ok = await startMic(); if (!ok){ $('micTest').textContent='Nedostupný'; return; }
+      testing=true; $('micTest').textContent='Beží ✓';
+      // show meter in settings: move meter temporarily
+      document.querySelector('#v-sett .set:nth-of-type(3)').appendChild($('meter')); $('meter').style.display='';
+    } else { testing=false; $('micTest').textContent='Zapnúť'; $('bigbox').insertBefore($('meter'), $('micnote')); syncMode(); }
+  };
+
+  syncMode();
+  meterLoop();
+})();
+</script>
+</body>
+</html>
